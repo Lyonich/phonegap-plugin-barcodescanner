@@ -45,7 +45,7 @@
 - (void)scan:(CDVInvokedUrlCommand*)command;
 - (void)encode:(CDVInvokedUrlCommand*)command;
 - (void)returnImage:(NSString*)filePath format:(NSString*)format callback:(NSString*)callback;
-- (void)returnSuccess:(NSString*)scannedText format:(NSString*)format cancelled:(BOOL)cancelled flipped:(BOOL)flipped callback:(NSString*)callback;
+- (void)returnSuccess:(NSString*)scannedText format:(NSString*)format cancelled:(BOOL)cancelled flipped:(BOOL)flipped callback:(NSString*)callback isBackButton:(BOOL)isBackButton;
 - (void)returnError:(NSString*)message callback:(NSString*)callback;
 @end
 
@@ -252,13 +252,16 @@
     [[self commandDelegate] sendPluginResult:result callbackId:callback];
 }
 
-- (void)returnSuccess:(NSString*)scannedText format:(NSString*)format cancelled:(BOOL)cancelled flipped:(BOOL)flipped callback:(NSString*)callback{
+- (void)returnSuccess:(NSString*)scannedText format:(NSString*)format cancelled:(BOOL)cancelled flipped:(BOOL)flipped callback:(NSString*)callback isBackButton:(BOOL)isBackButton {
     NSNumber* cancelledNumber = @(cancelled ? 1 : 0);
+    NSNumber* isBackButtonNumber = @(isBackButton ? 1 : 0);
 
     NSMutableDictionary* resultDict = [NSMutableDictionary new];
     resultDict[@"text"] = scannedText;
     resultDict[@"format"] = format;
     resultDict[@"cancelled"] = cancelledNumber;
+    resultDict[@"isBackButton"] = isBackButtonNumber;
+
 
     CDVPluginResult* result = [CDVPluginResult
                                resultWithStatus: CDVCommandStatus_OK
@@ -415,7 +418,7 @@ parentViewController:(UIViewController*)parentViewController
             AudioServicesPlaySystemSound(_soundFileObject);
         }
         [self barcodeScanDone:^{
-            [self.plugin returnSuccess:text format:format cancelled:FALSE flipped:FALSE callback:self.callback];
+            [self.plugin returnSuccess:text format:format cancelled:FALSE flipped:FALSE callback:self.callback isBackButton:FALSE];
         }];
     });
 }
@@ -432,7 +435,7 @@ parentViewController:(UIViewController*)parentViewController
 //--------------------------------------------------------------------------
 - (void)barcodeScanCancelled {
     [self barcodeScanDone:^{
-        [self.plugin returnSuccess:@"" format:@"" cancelled:TRUE flipped:self.isFlipped callback:self.callback];
+        [self.plugin returnSuccess:@"" format:@"" cancelled:TRUE flipped:self.isFlipped callback:self.callback isBackButton:FALSE];
     }];
     if (self.isFlipped) {
         self.isFlipped = NO;
@@ -902,7 +905,7 @@ CGFloat scanOffset = 40;
 }
 
 - (IBAction)backButtonPressed:(id)sender {
-    [self dismissViewControllerAnimated:true completion:nil];
+    [self.processor.plugin returnSuccess:@"" format:@"" cancelled:FALSE flipped:FALSE callback:self.processor.callback isBackButton:TRUE];
 }
 
 //--------------------------------------------------------------------------
