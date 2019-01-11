@@ -83,6 +83,7 @@
 - (void)barcodeScanSucceeded:(NSString*)text format:(NSString*)format;
 - (void)barcodeScanFailed:(NSString*)message;
 - (void)barcodeScanCancelled;
+- (void)backButtonPressed;
 - (void)openDialog;
 - (NSString*)setUpCaptureSession;
 - (void)captureOutput:(AVCaptureOutput*)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection*)connection;
@@ -433,6 +434,15 @@ parentViewController:(UIViewController*)parentViewController
 }
 
 //--------------------------------------------------------------------------
+
+- (void)backButtonPressed {
+    [self barcodeScanDone:^{
+        [self.plugin returnSuccess:@"" format:@"" cancelled:TRUE flipped:self.isFlipped callback:self.callback isBackButton:TRUE];
+    }];
+    if (self.isFlipped) {
+        self.isFlipped = NO;
+    }
+}
 - (void)barcodeScanCancelled {
     [self barcodeScanDone:^{
         [self.plugin returnSuccess:@"" format:@"" cancelled:TRUE flipped:self.isFlipped callback:self.callback isBackButton:FALSE];
@@ -905,7 +915,9 @@ CGFloat scanOffset = 40;
 }
 
 - (IBAction)backButtonPressed:(id)sender {
-    [self.processor.plugin returnSuccess:@"" format:@"" cancelled:FALSE flipped:FALSE callback:self.processor.callback isBackButton:TRUE];
+    [self.processor performSelector:@selector(backButtonPressed) withObject:nil afterDelay:0];
+
+    //    [self.processor.plugin returnSuccess:@"" format:@"" cancelled:FALSE flipped:FALSE callback:self.processor.callback isBackButton:TRUE];
 }
 
 //--------------------------------------------------------------------------
