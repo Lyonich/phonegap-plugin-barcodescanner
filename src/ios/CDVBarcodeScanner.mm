@@ -13,7 +13,7 @@
 #define MASK_CAMERA_WIDTH    295.0f
 #define MASK_CAMERA_HEIGHT    185.0f
 #define MASK_CAMERA_THICKNESS    3.0f
-#define MASK_CAMERA_INSET    50.0f
+#define MASK_CAMERA_INSET    70.0f
 #define MASK_CAMERA_VERTICAL_INSET    30.0f
 
 //------------------------------------------------------------------------------
@@ -810,8 +810,12 @@ CGFloat scanOffset = 40;
     [self addTitleLabel];
     [self addTextLabels];
     [self addEnterManualButton];
-
+    [self setNeedsStatusBarAppearanceUpdate];
     [super viewDidAppear:animated];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
 }
 
 - (void)createBackgroundArea {
@@ -857,7 +861,7 @@ CGFloat scanOffset = 40;
 }
 
 - (void)addTextLabels {
-    UILabel* headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, UIScreen.mainScreen.bounds.size.width, 20)];
+    UILabel* headerLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 130, UIScreen.mainScreen.bounds.size.width, 20)];
     headerLabel.textColor = [UIColor whiteColor];
     if (self.processor.localizedPositionTheFrame == nil) {
         headerLabel.text = @"Position the the frame over the code.";
@@ -870,7 +874,7 @@ CGFloat scanOffset = 40;
 
     [self.view addSubview:headerLabel];
 
-    UILabel* subHeaderLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 130, UIScreen.mainScreen.bounds.size.width, 20)];
+    UILabel* subHeaderLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 160, UIScreen.mainScreen.bounds.size.width, 20)];
     subHeaderLabel.textColor = [UIColor whiteColor];
 
     if (self.processor.localizedAvoidGlares == nil) {
@@ -1010,9 +1014,10 @@ CGFloat scanOffset = 40;
     CGFloat centerY = self.reticleView.frame.size.height / 2;
     CGFloat sideInset = (parentWidth - MASK_CAMERA_WIDTH) / 2;
 
-    CGContextSetLineWidth(context, MASK_CAMERA_THICKNESS);
+
 
     if (self.processor.is1D) {
+        CGContextSetLineWidth(context, 2.0);
         CGContextBeginPath(context);
         UIColor* color = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:1];
         CGContextSetStrokeColorWithColor(context, color.CGColor);
@@ -1022,6 +1027,7 @@ CGFloat scanOffset = 40;
     }
 
     if (self.processor.is2D) {
+        CGContextSetLineWidth(context, MASK_CAMERA_THICKNESS);
         UIColor* color = [UIColor colorWithWhite:1 alpha: 1];
         CGContextSetStrokeColorWithColor(context, color.CGColor);
 
